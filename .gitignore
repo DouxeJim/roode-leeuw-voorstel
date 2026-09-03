@@ -1,0 +1,10 @@
+# Alleen de site gaat naar GitHub Pages. Al het andere in deze map is werkmateriaal:
+# skeletten zonder de base64-beelden, opgehaalde kopieen van de live pagina, uitsneden
+# die een controle heeft neergezet. Zonder dit hek belandt dat bij de eerstvolgende
+# push op een openbaar adres.
+*
+!.gitignore
+!.nojekyll
+!index.html
+!robots.txt
+!README.md

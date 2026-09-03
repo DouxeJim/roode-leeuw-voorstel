@@ -431,7 +431,6 @@ h2.kopklein{
 .gang .gerechten,
 .gang .wijnlijst{max-width:52rem;margin-inline:auto}
 .kaartsectie .gerecht,
-#lunch .gerecht,
 .gerechten .gerecht,
 .wijnlijst .wijn{
   display:block;text-align:center;border-bottom:0;padding:.22rem 0;
@@ -459,6 +458,11 @@ h2.kopklein{
 /* Het kopje staat bij hen klein en wijd gespatieerd, met lucht erboven en weinig
    eronder, zonder lijn. De haarlijn in leeuwrood die hier stond deelde de kaart in
    vakken; die taak neemt de witruimte over. */
+/* De balk bovenaan blijft staan en is 80 pixels hoog. Zonder deze marge landt een klik
+   op De kaart precies achter die balk: op een telefoon was de bovenregel onzichtbaar en
+   de kop elf pixels afgesneden. De regel stond er wel, maar op h2.kopklein[id], en sinds
+   de wijnlijst weg is heeft geen enkele kop nog een id. De ankers zijn de secties. */
+#kaart,#lunch,#wijn{scroll-margin-top:6rem}
 .gang h2.kopklein{
   text-align:center;border-bottom:0;padding-bottom:0;
   font-size:.72rem;letter-spacing:.24em;font-weight:500;margin:0 0 .9rem;
@@ -695,6 +699,14 @@ h2.kopklein[id]{scroll-margin-top:6rem}
 
 <a class="overslaan" href="#inhoud">Naar de inhoud</a>
 
+<div style="background:#1F1613;color:#F2E2D2;font-family:Jost,system-ui,sans-serif;
+     font-size:.82rem;letter-spacing:.06em;line-height:1.5;padding:.65rem 1rem;text-align:center">
+  Ontwerpvoorstel voor De Roode Leeuw, nog niet de site zelf.
+  <span style="color:#E3D2BE">De reserveerknop is aangesloten op de echte agenda van het
+  restaurant: doorklikken tot en met bevestigen zet een tafel in het boek.</span>
+</div>
+
+
 <header>
   <div class="balk">
     <a class="wordmerk" href="#" data-ga="home">
@@ -811,10 +823,10 @@ h2.kopklein[id]{scroll-margin-top:6rem}
         op deze ene pagina; het menu scrolt ernaartoe in plaats van een tabblad te openen. Dat
         haalt het probleem weg dat de kaart op twee adressen stond en uit elkaar kon lopen,
         maar er komt iets voor terug. <strong>Let op het zoekverkeer.</strong> Met deze opzet
-        bestaan `/menukaart/`, `/lunch/` en `/wijnkaart/` niet meer als eigen adres, terwijl
+        bestaan /menukaart/, /lunch/ en /wijnkaart/ niet meer als eigen adres, terwijl
         "menukaart" juist een van de termen is waarop mensen dit restaurant zoeken. De
         gebruikelijke oplossing is die drie adressen als echte WordPress-pagina's te laten
-        bestaan en ze met een 301 naar `/#kaart`, `/#lunch` en `/#wijn` te sturen, zodat
+        bestaan en ze met een 301 naar /#kaart, /#lunch en /#wijn te sturen, zodat
         bestaande verwijzingen en Google-resultaten blijven werken. Bespreek dat voor de bouw.
       </div>
 
@@ -945,8 +957,9 @@ h2.kopklein[id]{scroll-margin-top:6rem}
           <h2>Vierenzeventig wijnen, en iemand die ze kent</h2>
           <p>
             De wand achter de bar is geen decor. Daar ligt een brede kaart, bij elkaar gezocht
-            bij importeurs die elk hun eigen streek kennen: van een glas huiswijn tot een fles
-            waar u de avond voor uittrekt.
+            bij importeurs die elk hun eigen streek kennen: van een glas huiswijn tot een
+            Château Talbot uit Saint-Julien, een Sassicaia uit Bolgheri of een Meursault
+            uit Bourgogne.
           </p>
           <p class="stil">
             Weet u het even niet, dan hoeft u niet te kiezen. Onze sommelier loopt de kaart met
@@ -1030,8 +1043,8 @@ h2.kopklein[id]{scroll-margin-top:6rem}
             zit de leeuw weer in zijn nis.
           </p>
           <p>
-            De kastelein van De Roode Leeuw was hier eeuwenlang ook tolgaarder van de
-            's-Gravenweg. Wie hier langs wilde, betaalde bij ons.
+            De kastelein van De Roode Leeuw was hier ook tolgaarder van de 's&#8209;Gravenweg,
+            een taak die van vader op zoon ging. Wie hier langs wilde, betaalde bij ons.
           </p>
           <div class="knoprij"><button class="knop leeg" data-ga="vroeger">Het hele verhaal</button></div>
         </div>
@@ -1373,7 +1386,7 @@ h2.kopklein[id]{scroll-margin-top:6rem}
   "priceRange": "$$$",
   "acceptsReservations": "True",
   "currenciesAccepted": "EUR",
-  "hasMenu": "https://deroodeleeuwcapelle.nl/menukaart/",
+  "hasMenu": "https://deroodeleeuwcapelle.nl/#kaart",
   "hasMap": "https://maps.google.com/?q='s-Gravenweg+379,+2905+LC+Capelle+aan+den+IJssel",
   "sameAs": [
     "https://www.facebook.com/deroodeleeuwcapelle",
@@ -1396,7 +1409,7 @@ h2.kopklein[id]{scroll-margin-top:6rem}
     if (paginas.indexOf(naam) === -1) naam = 'home';
     if (!viaHash) {
       var doel = naam === 'home' ? ' ' : '#' + naam;
-      if (history.replaceState) history.replaceState(null, '', doel);
+      if (history.pushState) history.pushState(null, '', doel);
       else location.hash = doel;
     }
     paginas.forEach(function(p){
@@ -1438,7 +1451,10 @@ h2.kopklein[id]{scroll-margin-top:6rem}
     if (wissel) toon('home');
     var spring = function(){
       doel.scrollIntoView({behavior: zacht ? 'smooth' : 'auto', block:'start'});
-      if (history.replaceState) history.replaceState(null, '', '#' + naam);
+      // pushState en niet replaceState: anders groeit de geschiedenis nooit en gooit een
+      // veeg terug de bezoeker de site uit in plaats van naar de vorige sectie. Op een
+      // telefoon is terugvegen de gewoonste manier van navigeren.
+      if (history.pushState) history.pushState(null, '', '#' + naam);
       merkNav(naam);
     };
     if (wissel) requestAnimationFrame(function(){ requestAnimationFrame(spring); });
@@ -1474,6 +1490,21 @@ h2.kopklein[id]{scroll-margin-top:6rem}
   // Alleen een hash die een pagina is schakelt de pagina om. Andere ankers, zoals
   // #inhoud van de overslaan-link en de ankers van de wijngroepen, laten de pagina
   // staan en laten de browser zelf naar het anker springen.
+  // Terugvegen verandert het adres zonder klik. Deze luisteraar zet de pagina daarop
+  // terug; hij mag zelf niets aan de geschiedenis toevoegen, anders kom je nooit weg.
+  window.addEventListener('popstate', function(){
+    var h = uitHash();
+    if (!h) { toon('home', true); return; }
+    if (paginas.indexOf(h) !== -1) { toon(h, true); return; }
+    if (secties.indexOf(h) !== -1) {
+      var doel = document.getElementById(h);
+      if (!doel) return;
+      if (!document.getElementById('pagina-home').classList.contains('actief')) toon('home', true);
+      doel.scrollIntoView({behavior:'auto', block:'start'});
+      merkNav(h);
+    }
+  });
+
   window.addEventListener('hashchange', function(){
     var h = uitHash();
     if (paginas.indexOf(h) !== -1) toon(h, true);
@@ -1488,7 +1519,7 @@ h2.kopklein[id]{scroll-margin-top:6rem}
   });
 
   // Een verwijzing van buitenaf kan ook naar een anker binnen een pagina wijzen,
-  // bijvoorbeeld #wijn-rood. Zoek dan eerst de pagina waar dat anker in staat.
+  // bijvoorbeeld #kaart. Zoek dan eerst de pagina waar dat anker in staat.
   function beginToestand(){
     var h = uitHash();
     if (!h) return;
